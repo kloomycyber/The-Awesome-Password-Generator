@@ -1,0 +1,88 @@
+#What you'll need to install the program
+#Customtkinter is the only thing required to run this.
+
+from customtkinter import *
+import string
+import random
+import subprocess
+
+
+app = CTk()
+app.title("The Awesome Password Generator!")
+app.geometry("500x400")
+app.resizable(height=0, width=0)
+
+def generate_password():
+    try:
+        length = int(entry.get())
+    except ValueError:
+        password_label.configure(text="Please enter a number")
+        return
+    characters = ''
+
+    if not any([switch_uppercase.get(), switch_special.get(), switch_numbers.get(), switch_lowercase.get()]):
+        password_label.configure(text="Please select at least one option")
+        return
+
+    if length <= 0:
+        password_label.configure(text="Password length needs to be greater than 0")
+        return
+
+    if switch_lowercase.get():
+        characters += string.ascii_lowercase
+
+    if switch_uppercase.get():
+        characters += string.ascii_uppercase
+
+    if switch_special.get():
+        characters += string.punctuation
+
+    if switch_numbers.get():
+        characters += string.digits
+
+    password = ''.join(random.choice(characters) for _ in range(length))
+    password_label.configure(text="Generated password: " + password)
+
+
+    btn_copy.configure(state="normal")
+    app.generated_password = password
+
+def copy_password():
+    if hasattr(app, 'generated_password'):
+        subprocess.run(['xclip', '-selection', 'clipboard'], input=app.generated_password.encode('utf-8'))
+        password_label.configure(text="Password copied to clipboard!")
+        #THIS IS THE PROBLEM JUST MAKE IT 'CONFIGURE', CAUSE THE COMPUTER DOESNT KNOW 'CONFIG'
+
+
+btn_generate = CTkButton(master=app, text="Generate Password", corner_radius=16)
+btn_generate.place(relx=0.5, rely=0.80, anchor="center")
+btn_generate.bind("<Button-1>", lambda event: generate_password())
+
+password_label = CTkLabel(master=app,text='', font=("Arial", 14))
+password_label.place(relx=0.5, rely=0.90, anchor="center")
+
+entry = CTkEntry(master=app, placeholder_text="Password Length", width=120,)
+entry.place(relx=0.5, rely=0.2, anchor="center")
+#Switch Buttons
+switch_uppercase = CTkSwitch(master=app, text="Include Uppercase Letters")
+switch_uppercase.place(relx=0.5, rely=0.3, anchor="center")
+
+switch_lowercase = CTkSwitch(master=app, text="Include Lowercase Letters")
+switch_lowercase.place(relx=0.5, rely=0.4, anchor="center")
+
+switch_special = CTkSwitch(master=app, text="Include Special Characters")
+switch_special.place(relx=0.5, rely=0.5, anchor="center")
+
+switch_numbers = CTkSwitch(master=app, text="Include Numbers")
+switch_numbers.place(relx=0.5, rely=0.6, anchor="center")
+
+btn_copy = CTkButton(master=app, text="Copy Password", corner_radius=16, state="disable", command=copy_password)
+btn_copy.place(relx=0.5, rely=0.70, anchor="center")
+
+set_appearance_mode("dark")
+
+app.mainloop()
+
+
+#Developed by Kenneth Velazquez
+#Thanks for using!
