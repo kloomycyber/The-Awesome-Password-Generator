@@ -1,5 +1,5 @@
 #What you'll need to install the program
-#Customtkinter is the only thing required to run this.
+#Customtkinter, and xclip is the only things required to run this.
 
 from customtkinter import *
 import string
